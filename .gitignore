@@ -1,0 +1,7 @@
+build/
+kernel
+kernel.asm
+*.o
+*.s
+.idea/
+cmake-build-*/
