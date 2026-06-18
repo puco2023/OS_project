@@ -1,5 +1,4 @@
 #include "../h/RiscV.hpp"
-#include "../lib/console.h"
 #include"../h/TCB.hpp"
 #include "../lib/hw.h"
 #include "../h/SyscallCodes.hpp"
@@ -7,7 +6,6 @@
 #include"../h/Syscall_c_api.hpp"
 #include "../h/KernelConsole.hpp"
 void RiscV::handleSupervisorTrap() {
-    // Čitamo a0-a4 PRE bilo kog CSR čitanja da kompajler ne bi prepisao registre
     uint64 code, arg1, arg2, arg3, arg4;
     __asm__ volatile(
         "mv %0, a0\n\t"
@@ -22,7 +20,8 @@ void RiscV::handleSupervisorTrap() {
 
     if (scause == 0x0000000000000009UL || scause == 0x0000000000000008UL) {
         uint64 sepc = r_sepc() + 4;
-        uint64 sstatus = r_sstatus();
+        // volatile forces stack reload on use: survives context switch (only ra/sp saved)
+        volatile uint64 sstatus = r_sstatus();
 
         uint64 ret = 0;
 
@@ -110,8 +109,7 @@ void RiscV::handleSupervisorTrap() {
                 break;
             }
             case TIME_SLEEP: {
-                time_t time = (time_t)arg1;
-                ret = TCB::sleep(time);
+                ret = (uint64)TCB::sleep((time_t)arg1);
                 break;
             }
             case GETC: {
@@ -139,19 +137,31 @@ void RiscV::handleSupervisorTrap() {
     }
 
     if (scause == 0x8000000000000001UL) {
-        //najvisi bit je interupt softverski, ovo je prekid od tajmera
+        uint64 sepc = r_sepc();
+        uint64 sstatus = r_sstatus();
+
+        static uint64 tickCount = 0;
+        tickCount++;
+        if (tickCount % 3 == 0) {
+            extern void printString(char const*);
+            extern void printInteger(uint64);
+            printString("[TICK] n=");
+            printInteger(tickCount);
+            printString(" sleeping=");
+            printInteger((uint64)TCB::sleepingHead);
+            printString("\n");
+        }
+
         TCB::tickSleeping();
         TCB::timeSliceCounter++;
-        if (TCB::timeSliceCounter>=TCB::running->getTimeSlice()) {
-            uint64 sepc = r_sepc();
-            uint64 sstatus = r_sstatus();
+        if (TCB::timeSliceCounter >= TCB::running->getTimeSlice()) {
             TCB::timeSliceCounter = 0;
             TCB::dispatch();
-            w_sstatus(sstatus);
-            w_sepc(sepc);
         }
 
         mc_sip(SIP_SSIP);
+        w_sstatus(sstatus);
+        w_sepc(sepc);
     }
     if (scause == 0x8000000000000009UL) {
         int irq = plic_claim();

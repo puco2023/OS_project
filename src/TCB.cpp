@@ -6,6 +6,7 @@
 #include "../h/RiscV.hpp"
 #include "../h/Scheduler.hpp"
 #include "../h/MemoryAllocator.hpp"
+#include "../lib/console.h"
 TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCounter = 0;
 TCB* TCB::idleThread = nullptr;
@@ -14,52 +15,6 @@ void TCB::idleBody(void*)
 {
     while (true) {
         TCB::dispatch();
-    }
-}
-int TCB::sleep(time_t time)
-{
-    if (time == 0) return 0;
-
-    TCB* old = TCB::running;
-
-    old->sleepTime = time;
-    old->nextSleeping = sleepingHead;
-    sleepingHead = old;
-
-    old->setBlocked(true);
-
-    TCB::dispatch();
-    return 0;
-}
-void TCB::tickSleeping()
-{
-    TCB* prev = nullptr;
-    TCB* cur = sleepingHead;
-
-    while (cur != nullptr) {
-        if (cur->sleepTime > 0) {
-            cur->sleepTime--;
-        }
-
-        if (cur->sleepTime == 0) {
-            TCB* wake = cur;
-
-            cur = cur->nextSleeping;
-
-            if (prev == nullptr) {
-                sleepingHead = cur;
-            } else {
-                prev->nextSleeping = cur;
-            }
-
-            wake->nextSleeping = nullptr;
-            wake->setBlocked(false);
-            Scheduler::put(wake);
-        } else {
-
-            prev = cur;
-            cur = cur->nextSleeping;
-        }
     }
 }
 void TCB::initIdleThread()
@@ -148,6 +103,54 @@ int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
     Scheduler::put(t);
     return 0;
 }
+extern void printString(char const*);
+extern void printInteger(uint64);
+
+int TCB::sleep(time_t time) {
+    if (time == 0) return 0;
+
+    printString("[SLEEP] inserting sleepTime=");
+    printInteger(time);
+    printString(" thread=");
+    printInteger((uint64)running);
+    printString("\n");
+
+    running->sleepTime = time;
+    running->nextSleeping = sleepingHead;
+    sleepingHead = running;
+
+    running->setBlocked(true);
+    dispatch();
+
+    __putc('W'); __putc('!'); __putc('\n');
+
+    printString("[SLEEP] woke up thread=");
+    printInteger((uint64)running);
+    printString("\n");
+
+    return 0;
+}
+
+void TCB::tickSleeping() {
+    TCB* prev = nullptr;
+    TCB* curr = sleepingHead;
+    while (curr != nullptr) {
+        curr->sleepTime--;
+        if (curr->sleepTime == 0) {
+            TCB* next = curr->nextSleeping;
+            if (prev == nullptr) sleepingHead = next;
+            else prev->nextSleeping = next;
+            curr->nextSleeping = nullptr;
+            curr->setBlocked(false);
+            Scheduler::put(curr);
+            curr = next;
+        } else {
+            prev = curr;
+            curr = curr->nextSleeping;
+        }
+    }
+}
+
 int TCB::thread_exit()
 {
     if (running == nullptr) {

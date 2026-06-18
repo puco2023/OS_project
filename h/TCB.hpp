@@ -3,7 +3,6 @@
 
 #include "Scheduler.hpp"
 #include "../lib/hw.h"
-
 class TCB {
 public:
     ~TCB() { delete[] stack; }
@@ -37,7 +36,8 @@ public:
           stack((uint64*)stack_space),
           context({
               body != nullptr ? (uint64)&threadWrapper : 0,
-              stack != nullptr ? (uint64)((uint64*)stack + DEFAULT_STACK_SIZE / sizeof(uint64)) : 0
+              stack != nullptr ? (uint64)((uint64*)stack + DEFAULT_STACK_SIZE / sizeof(uint64)) : 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           }),
           finished(false),
           blocked(false),
@@ -50,6 +50,18 @@ public:
     struct Context {
         uint64 ra;
         uint64 sp;
+        uint64 s0;
+        uint64 s1;
+        uint64 s2;
+        uint64 s3;
+        uint64 s4;
+        uint64 s5;
+        uint64 s6;
+        uint64 s7;
+        uint64 s8;
+        uint64 s9;
+        uint64 s10;
+        uint64 s11;
     };
 private:
 
