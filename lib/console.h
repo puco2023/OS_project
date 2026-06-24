@@ -4,11 +4,11 @@
 extern "C" {
 #endif
 
-    void __putc(char chr);
+    //void __putc(char chr);
 
-    char __getc();
+    //char __getc();
 
-    void console_handler();
+    //void console_handler();
 
 #ifdef __cplusplus
 }

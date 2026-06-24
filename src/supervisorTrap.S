@@ -22,6 +22,6 @@ _ZN5RiscV14supervisorTrapEv:
 .type _ZN5RiscV10popSppSpieEv, @function
 _ZN5RiscV10popSppSpieEv:
     li t0, 0x100
-    csrs sstatus, t0
+    csrc sstatus, t0
     csrw sepc, ra
     sret

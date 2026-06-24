@@ -103,30 +103,16 @@ int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
     Scheduler::put(t);
     return 0;
 }
-extern void printString(char const*);
-extern void printInteger(uint64);
+
 
 int TCB::sleep(time_t time) {
     if (time == 0) return 0;
-
-    printString("[SLEEP] inserting sleepTime=");
-    printInteger(time);
-    printString(" thread=");
-    printInteger((uint64)running);
-    printString("\n");
-
     running->sleepTime = time;
     running->nextSleeping = sleepingHead;
     sleepingHead = running;
 
     running->setBlocked(true);
     dispatch();
-
-    __putc('W'); __putc('!'); __putc('\n');
-
-    printString("[SLEEP] woke up thread=");
-    printInteger((uint64)running);
-    printString("\n");
 
     return 0;
 }

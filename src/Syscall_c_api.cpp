@@ -176,7 +176,7 @@ int time_sleep(time_t time)
 
     return (int)a0;
 }
-char _getc() {
+char getc() {
     __asm__ volatile("li a0, 0x41");
     __asm__ volatile("ecall");
 
@@ -186,7 +186,7 @@ char _getc() {
     return ret;
 }
 
-void _putc(char c) {
+void putc(char c) {
     __asm__ volatile("mv a1, %0" : : "r"(c));
     __asm__ volatile("li a0, 0x42");
     __asm__ volatile("ecall");

@@ -15,6 +15,11 @@ bool KernelConsole::isConsoleInterrupted = false;
 _sem* KernelConsole::getcSemaphore = nullptr;
 KernelConsole::KernelConsole() {
     getcSemaphore = new _sem(0);
+    // uartinit (called by hw.lib's consoleinit) enables both RX and TX (THRE) interrupts.
+    // The TX interrupt causes an infinite PLIC re-delivery storm because our putc_handler
+    // polls CONSOLE_STATUS instead of using TX interrupts, so we never clear the THRE flag.
+    // Disable TX interrupt, keep only RX interrupt (bit 0).
+    *((volatile uint8*)(CONSOLE_RX_DATA + 1)) = 0x01;
 }
 KernelConsole* KernelConsole::getInstance() {
     static KernelConsole instance;

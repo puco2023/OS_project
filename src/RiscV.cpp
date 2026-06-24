@@ -136,30 +136,27 @@ void RiscV::handleSupervisorTrap() {
         return;
     }
 
+    if (scause == 2UL) {
+        // Illegal instruction from U-mode (e.g. privileged CSR access)
+        TCB::running->setFinished(true);
+        TCB::timeSliceCounter = 0;
+        TCB::dispatch();
+        return;
+    }
+
     if (scause == 0x8000000000000001UL) {
         uint64 sepc = r_sepc();
         uint64 sstatus = r_sstatus();
 
         static uint64 tickCount = 0;
         tickCount++;
-        if (tickCount % 3 == 0) {
-            extern void printString(char const*);
-            extern void printInteger(uint64);
-            printString("[TICK] n=");
-            printInteger(tickCount);
-            printString(" sleeping=");
-            printInteger((uint64)TCB::sleepingHead);
-            printString("\n");
-        }
-
         TCB::tickSleeping();
         TCB::timeSliceCounter++;
+        mc_sip(SIP_SSIP);
         if (TCB::timeSliceCounter >= TCB::running->getTimeSlice()) {
             TCB::timeSliceCounter = 0;
             TCB::dispatch();
         }
-
-        mc_sip(SIP_SSIP);
         w_sstatus(sstatus);
         w_sepc(sepc);
     }

@@ -67,8 +67,31 @@ int Semaphore::signal()
     return sem_signal(myHandle);
 }
 char Console::getc() {
-    return _getc();
+    return ::getc();
 }
+
 void Console::putc(char c) {
-    return _putc(c);
+    ::putc(c);
+}
+
+PeriodicThread::PeriodicThread(time_t period)
+    : Thread(&PeriodicThread::periodicThreadWrapper, this), period(period) {
+}
+
+void PeriodicThread::terminate() {
+    period = 0;
+}
+
+void PeriodicThread::periodicThreadWrapper(void* arg) {
+    PeriodicThread* thread = (PeriodicThread*) arg;
+
+    while (thread->period != 0) {
+        thread->periodicActivation();
+
+        if (thread->period == 0) {
+            break;
+        }
+
+        Thread::sleep(thread->period);
+    }
 }

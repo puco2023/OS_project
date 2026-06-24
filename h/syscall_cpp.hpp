@@ -41,4 +41,17 @@ public:
     static char getc();
     static void putc(char c);
 };
+class PeriodicThread : public Thread {
+public:
+    void terminate();
+
+protected:
+    PeriodicThread(time_t period);
+    virtual void periodicActivation() {}
+
+private:
+    static void periodicThreadWrapper(void* arg);
+    time_t period;
+};
 #endif
+
