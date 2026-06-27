@@ -20,7 +20,6 @@ void RiscV::handleSupervisorTrap() {
 
     if (scause == 0x0000000000000009UL || scause == 0x0000000000000008UL) {
         uint64 sepc = r_sepc() + 4;
-        // volatile forces stack reload on use: survives context switch (only ra/sp saved)
         volatile uint64 sstatus = r_sstatus();
 
         uint64 ret = 0;
@@ -43,8 +42,6 @@ void RiscV::handleSupervisorTrap() {
                 break;
 
             case THREAD_DISPATCH: {
-                // dispatch() MORA biti pre w_sepc/w_sstatus jer druge niti
-                // prepisuju sepc CSR tokom svog izvršavanja
                 TCB::dispatch();
                 w_sstatus(sstatus);
                 w_sepc(sepc);
@@ -137,7 +134,6 @@ void RiscV::handleSupervisorTrap() {
     }
 
     if (scause == 2UL) {
-        // Illegal instruction from U-mode (e.g. privileged CSR access)
         TCB::running->setFinished(true);
         TCB::timeSliceCounter = 0;
         TCB::dispatch();

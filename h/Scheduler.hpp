@@ -1,7 +1,3 @@
-//
-// Created by os on 5/11/26.
-//
-
 #ifndef PROJEKAT_SCHEDULER_H
 #define PROJEKAT_SCHEDULER_H
 
@@ -10,7 +6,7 @@ class TCB;
 class Scheduler
 {
 private:
-        static List<TCB> readyCoroutineQueue;
+        static List<TCB> readyThreadQueue;
 public:
     static TCB *get();
 

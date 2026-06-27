@@ -1,7 +1,3 @@
-//
-// Created by os on 5/11/26.
-//
-
 #include "../h/TCB.hpp"
 #include "../h/RiscV.hpp"
 #include "../h/Scheduler.hpp"

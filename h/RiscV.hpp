@@ -6,29 +6,14 @@ class RiscV
 public:
     static void pushRegisters();
     static void popRegisters();
-    // read register scause
     static void popSppSpie();
     static uint64 r_scause();
-
-    // write register scause
     static void w_scause(uint64 scause);
-
-    // read register sepc
     static uint64 r_sepc();
-
-    // write register sepc
     static void w_sepc(uint64 sepc);
-
-    // read register stvec
     static uint64 r_stvec();
-
-    // write register stvec
     static void w_stvec(uint64 stvec);
-
-    // read register stval
     static uint64 r_stval();
-
-    // write register stval
     static void w_stval(uint64 stval);
 
     enum BitMaskSie
@@ -47,16 +32,9 @@ public:
         SIP_SEIP = (1 << 9),
     };
 
-    // mask set register sip
     static void ms_sip(uint64 mask);
-
-    // mask clear register sip
     static void mc_sip(uint64 mask);
-
-    // read register sip
     static uint64 r_sip();
-
-    // write register sip
     static void w_sip(uint64 sip);
 
     enum BitMaskSstatus
@@ -66,16 +44,9 @@ public:
         SSTATUS_SPP = (1 << 8),
     };
 
-    // mask set register sstatus
     static void ms_sstatus(uint64 mask);
-
-    // mask clear register sstatus
     static void mc_sstatus(uint64 mask);
-
-    // read register sstatus
     static uint64 r_sstatus();
-
-    // write register sstatus
     static void w_sstatus(uint64 sstatus);
     static void supervisorTrap();
 private:

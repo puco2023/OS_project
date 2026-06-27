@@ -1,6 +1,6 @@
 #include "../h/KernelConsole.hpp"
 #include "../h/Syscall_c_api.hpp"
-#include "../h/Print.hpp"
+
 char KernelConsole::putcDataBuffer[BUFFER_SIZE];
 char KernelConsole::getcDataBuffer[BUFFER_SIZE];
 
@@ -15,10 +15,6 @@ bool KernelConsole::isConsoleInterrupted = false;
 _sem* KernelConsole::getcSemaphore = nullptr;
 KernelConsole::KernelConsole() {
     getcSemaphore = new _sem(0);
-    // uartinit (called by hw.lib's consoleinit) enables both RX and TX (THRE) interrupts.
-    // The TX interrupt causes an infinite PLIC re-delivery storm because our putc_handler
-    // polls CONSOLE_STATUS instead of using TX interrupts, so we never clear the THRE flag.
-    // Disable TX interrupt, keep only RX interrupt (bit 0).
     *((volatile uint8*)(CONSOLE_RX_DATA + 1)) = 0x01;
 }
 KernelConsole* KernelConsole::getInstance() {
@@ -68,15 +64,12 @@ char KernelConsole::getc() {
     return c;
 }
 void KernelConsole::getc_handler() {
-    // Čitanje se radi direktno u console_handler (interrupt context).
-    // Ova nit nije potrebna ali ostaje radi kompatibilnosti.
+
     while (true) {
         thread_dispatch();
     }
 }
 void KernelConsole::console_handler() {
-    // Poziva se iz trap handlera dok je SIE=1 (eksterni prekid).
-    // Čitamo direktno ovdje jer getc_handler nit radi sa SIE=0.
     uint8 status = *((char*)CONSOLE_STATUS);
     uint8 rxReady = status & CONSOLE_RX_STATUS_BIT;
 

@@ -18,7 +18,7 @@ static void producerKeyboard(void *arg) {
 
     int key;
     int i = 0;
-    while ((key = getc()) != 0x61) {
+    while ((key = getc()) != 0x1b) {
         data->buffer->put(key);
         i++;
 

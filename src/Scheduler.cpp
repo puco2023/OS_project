@@ -1,12 +1,8 @@
-//
-// Created by os on 5/11/26.
-//
-
 #include "../h/Scheduler.hpp"
-List<TCB> Scheduler::readyCoroutineQueue;
+List<TCB> Scheduler::readyThreadQueue;
 TCB* Scheduler::get() {
-    return readyCoroutineQueue.removeFirst();
+    return readyThreadQueue.removeFirst();
 }
 void Scheduler::put(TCB* tcb) {
-    readyCoroutineQueue.addLast(tcb);
+    readyThreadQueue.addLast(tcb);
 }
