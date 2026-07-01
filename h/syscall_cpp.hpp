@@ -15,7 +15,9 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
-
+    static void pair(Thread*, Thread*);
+    void sync();
+    thread_t getMyHandle(){return myHandle;}
 protected:
     Thread();
     virtual void run() {}

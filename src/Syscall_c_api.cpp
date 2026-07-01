@@ -191,3 +191,18 @@ void putc(char c) {
     __asm__ volatile("li a0, 0x42");
     __asm__ volatile("ecall");
 }
+void pair(thread_t t1,thread_t t2) {
+    __asm__ volatile(
+        "mv a1, %0\n\t"
+        "mv a2, %1\n\t"
+        "li a0, 0x14\n\t"
+        "ecall"
+        :
+        : "r"(t1), "r"(t2)
+        : "a0", "a1", "a2", "memory"
+    );
+}
+void _sync() {
+    __asm__ volatile("li a0,0x15");
+    __asm__ volatile("ecall");
+}

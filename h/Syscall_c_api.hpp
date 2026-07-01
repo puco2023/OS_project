@@ -23,4 +23,6 @@ int sem_signal_n(sem_t id,unsigned n);
 int time_sleep(time_t time);
 char getc();
 void putc(char c);
+void pair(thread_t, thread_t);
+void _sync();
 #endif

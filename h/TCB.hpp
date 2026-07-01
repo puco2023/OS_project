@@ -3,6 +3,7 @@
 
 #include "Scheduler.hpp"
 #include "../lib/hw.h"
+class _sem;
 class TCB {
 public:
     ~TCB() { delete[] stack; }
@@ -43,7 +44,10 @@ public:
           blocked(false),
           sleepTime(0),
           nextSleeping(nullptr),
-          timeSlice(timeSlice)
+          timeSlice(timeSlice),
+          pairThread(nullptr),
+          semaphorePair(nullptr),
+          isCalled(false)
     {
     }
     int thread_exit();
@@ -63,6 +67,8 @@ public:
         uint64 s10;
         uint64 s11;
     };
+    static void pair(TCB* t1, TCB* t2);
+    static void sync(TCB* t1);
 private:
 
 
@@ -94,6 +100,9 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+    TCB* pairThread;
+    _sem* semaphorePair;
+    bool isCalled;
 };
 
 #endif

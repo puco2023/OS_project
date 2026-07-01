@@ -2,6 +2,7 @@
 #include "../h/RiscV.hpp"
 #include "../h/Scheduler.hpp"
 #include "../h/MemoryAllocator.hpp"
+#include "../h/Semaphore.hpp"
 #include "../lib/console.h"
 TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCounter = 0;
@@ -159,4 +160,23 @@ int TCB::thread_exit()
     dispatch();
 
     return 1;
+}
+void TCB::pair(TCB* t1,TCB* t2) {
+    t1->semaphorePair = new _sem(0);
+    t2->semaphorePair = new _sem(0);
+    t1->pairThread=t2;
+    t2->pairThread = t1;
+}
+void TCB::sync(TCB* t1) {
+
+    TCB* t2 = t1->pairThread;
+    if (t2->isCalled==false) {
+        t1->isCalled = true;
+        t1->semaphorePair->wait();
+        t1->isCalled=false;
+    }
+    else {
+        t2->isCalled=false;
+        t2->semaphorePair->signal();
+    }
 }

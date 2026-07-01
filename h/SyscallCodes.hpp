@@ -16,5 +16,6 @@
 #define TIME_SLEEP 0x31
 #define GETC 0x41
 #define PUTC 0x42
-
+#define PAIR 0x14
+#define SYNC 0x15
 #endif

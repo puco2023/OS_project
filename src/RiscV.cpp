@@ -123,6 +123,16 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+            case PAIR: {
+                TCB* t1 = (TCB*) arg1;
+                TCB* t2 = (TCB*) arg2;
+                TCB::pair(t1,t2);
+                break;
+            }
+            case SYNC:{
+                TCB::sync(TCB::running);
+                break;
+            }
         }
 
         __asm__ volatile("mv a0, %0" : : "r"(ret));

@@ -95,3 +95,10 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
         Thread::sleep(thread->period);
     }
 }
+
+void Thread::pair(Thread *t1, Thread *t2) {
+    ::pair(t1->getMyHandle(), t2->getMyHandle());
+}
+void Thread::sync() {
+    _sync();
+}
