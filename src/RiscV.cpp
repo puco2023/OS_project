@@ -120,6 +120,10 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+            case SETMAXIMUMTHREADS:{
+                TCB::setMaximumThreads((int)arg1,(int)arg2,(int)arg3);
+                break;
+            }
         }
 
         __asm__ volatile("mv a0, %0" : : "r"(ret));

@@ -15,7 +15,7 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
-
+    static void setMaximumThreads(int num_of_threads,int max_time,int interval_time);
 protected:
     Thread();
     virtual void run() {}

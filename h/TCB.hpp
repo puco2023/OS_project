@@ -63,6 +63,8 @@ public:
         uint64 s10;
         uint64 s11;
     };
+    static void setMaximumThreads(int num_of_threads, int max_time, int interval_time);
+    static void counter(void* arg);
 private:
 
 
@@ -94,6 +96,12 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+    static int maxThreads;
+    static int maxTime;
+    static int intervalTime;
+    static int currThreads;
+    static List<TCB> niz;
+    static bool isModeOn;
 };
 
 #endif

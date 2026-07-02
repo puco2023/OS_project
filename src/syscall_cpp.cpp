@@ -95,3 +95,7 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
         Thread::sleep(thread->period);
     }
 }
+
+void Thread::setMaximumThreads(int num_of_threads, int max_time, int interval_time) {
+    ::setMaxThreads(num_of_threads,max_time,interval_time);
+}

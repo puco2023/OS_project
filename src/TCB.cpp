@@ -7,6 +7,13 @@ TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCounter = 0;
 TCB* TCB::idleThread = nullptr;
 TCB* TCB::sleepingHead = nullptr;
+
+int TCB::maxThreads=0;
+int TCB::intervalTime=0;
+int TCB::maxTime=0;
+int TCB::currThreads=0;
+List<TCB> TCB::niz;
+bool TCB::isModeOn = false;
 void TCB::idleBody(void*)
 {
     while (true) {
@@ -41,6 +48,8 @@ void TCB::yield()
 
 void TCB::dispatch()
 {
+    RiscV::mc_sstatus(RiscV::SSTATUS_SIE);
+
     TCB* old = TCB::running;
 
     if (!old->isFinished() && !old->isBlocked()) {
@@ -54,16 +63,20 @@ void TCB::dispatch()
     }
 
     if (next == nullptr) {
+        RiscV::ms_sstatus(RiscV::SSTATUS_SIE);
         return;
     }
 
     if (next == old) {
+        RiscV::ms_sstatus(RiscV::SSTATUS_SIE);
         return;
     }
 
     TCB::running = next;
 
     TCB::contextSwitch(&old->context, &next->context);
+
+    RiscV::ms_sstatus(RiscV::SSTATUS_SIE);
 }
 
 void TCB::threadWrapper()
@@ -88,15 +101,23 @@ int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
     if (stack_space == nullptr) {
         return -3;
     }
-
     TCB* t = new TCB(body, arg, stack_space, DEFAULT_TIME_SLICE);
 
     if (t == nullptr) {
         return -4;
     }
+    bool isCounterThread = (body == &TCB::counter);
+
+    if (TCB::isModeOn && !isCounterThread && TCB::currThreads >= TCB::maxThreads) {
+        TCB::niz.addLast(t);
+    } else {
+        if (TCB::isModeOn && !isCounterThread) {
+            TCB::currThreads++;
+        }
+        Scheduler::put(t);
+    }
 
     *handle = t;
-    Scheduler::put(t);
     return 0;
 }
 
@@ -159,4 +180,28 @@ int TCB::thread_exit()
     dispatch();
 
     return 1;
+}
+void TCB::counter(void* arg) {
+    TCB::sleep(maxTime);
+
+    TCB* t = nullptr;
+    while ((t = niz.removeFirst()) != nullptr) {
+        Scheduler::put(t);
+        TCB::sleep(TCB::intervalTime);
+    }
+    TCB::maxThreads=0;
+    TCB::maxTime=0;
+    TCB::intervalTime=0;
+    TCB::currThreads=0;
+    TCB::isModeOn=false;
+}
+void TCB::setMaximumThreads(int num_of_threads,int max_time,int interval_time) {
+    TCB::maxThreads=num_of_threads;
+    TCB::maxTime=max_time;
+    TCB::intervalTime=interval_time;
+    TCB::currThreads=0;
+    void* stack = MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE);
+    TCB* t;
+    createThread(&t,counter,nullptr,stack);
+    TCB::isModeOn=true;
 }

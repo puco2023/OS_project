@@ -191,3 +191,17 @@ void putc(char c) {
     __asm__ volatile("li a0, 0x42");
     __asm__ volatile("ecall");
 }
+
+void setMaxThreads(int num_of_threads, int max_time, int interval_time) {
+
+    __asm__ volatile("mv a1,%0\n\t"
+                     "mv a2, %1\n\t"
+                     "mv a3, %2\n\t"
+                     "mv a0, %3\n\t"
+                     "ecall"
+                     :
+                     : "r"((uint64)num_of_threads), "r"((uint64)max_time), "r"((uint64)interval_time),"r"(SETMAXIMUMTHREADS)
+                     : "a0", "a1", "a2","a3", "memory");
+
+}
+

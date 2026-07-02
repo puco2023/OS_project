@@ -23,4 +23,5 @@ int sem_signal_n(sem_t id,unsigned n);
 int time_sleep(time_t time);
 char getc();
 void putc(char c);
+void setMaxThreads(int num_of_threads, int max_time,int interval_time);
 #endif
