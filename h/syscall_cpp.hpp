@@ -15,7 +15,7 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
-
+    void join(Thread* t,time_t time);
 protected:
     Thread();
     virtual void run() {}

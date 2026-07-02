@@ -39,12 +39,15 @@ void TCB::yield()
     __asm__ volatile("ecall");
 }
 
-void TCB::dispatch()
-{
+void TCB::dispatch() {
     TCB* old = TCB::running;
 
     if (!old->isFinished() && !old->isBlocked()) {
         Scheduler::put(old);
+    }
+    if (old->isFinished() && old->parrent!=nullptr) {
+        old->parrent->isChildFinished = true;
+        old->parrent->semaphore->signal();
     }
 
     TCB* next = Scheduler::get();
@@ -159,4 +162,15 @@ int TCB::thread_exit()
     dispatch();
 
     return 1;
+}
+void TCB::join(TCB* parent, TCB* child, int time) {
+    (void)time;
+
+    if (parent == nullptr || child == nullptr || parent == child) {
+        return;
+    }
+
+    while (!child->isFinished()) {
+        dispatch();
+    }
 }

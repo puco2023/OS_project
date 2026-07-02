@@ -120,6 +120,12 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+            case JOIN: {
+                TCB* child = (TCB*)arg1;
+                int time = (int)arg2;
+                TCB::running->join(TCB::running, child, time);
+                break;
+            }
         }
 
         __asm__ volatile("mv a0, %0" : : "r"(ret));

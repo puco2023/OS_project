@@ -2,7 +2,9 @@
 #define PROJEKAT_TCB_H
 
 #include "Scheduler.hpp"
+#include "../h/Semaphore.hpp"
 #include "../lib/hw.h"
+class _sem;
 class TCB {
 public:
     ~TCB() { delete[] stack; }
@@ -43,7 +45,10 @@ public:
           blocked(false),
           sleepTime(0),
           nextSleeping(nullptr),
-          timeSlice(timeSlice)
+          timeSlice(timeSlice),
+          parrent(nullptr),
+          semaphore(nullptr),
+          isChildFinished(false)
     {
     }
     int thread_exit();
@@ -63,6 +68,9 @@ public:
         uint64 s10;
         uint64 s11;
     };
+
+    void join(TCB* parrent,TCB* child, int time);
+    void counter(void* arg);
 private:
 
 
@@ -94,6 +102,9 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+    TCB* parrent;
+    _sem* semaphore;
+    bool isChildFinished;
 };
 
 #endif

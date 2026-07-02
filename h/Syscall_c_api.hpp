@@ -23,4 +23,5 @@ int sem_signal_n(sem_t id,unsigned n);
 int time_sleep(time_t time);
 char getc();
 void putc(char c);
+void _join(TCB* t, int time);
 #endif

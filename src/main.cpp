@@ -6,17 +6,20 @@
 #include "../lib/hw.h"
 
 extern void userMain();
-
-static void userMainWrapper(void* arg) {
-    Semaphore* sem = (Semaphore*) arg;
-    userMain();
-    sem->signal();
-}
-
 static void idle(void* arg) {
     while (true) {
         Thread::dispatch();
     }
+}
+
+static void joinWorker(void* arg) {
+    (void)arg;
+    for (int i = 0; i < 3; i++) {
+        Console::putc('W');
+        Thread::dispatch();
+    }
+
+    Console::putc('!');
 }
 
 int main() {
@@ -41,13 +44,17 @@ int main() {
 
     getcHandlerThread->start();
 
-    Semaphore* sem = new Semaphore(0);
     idleThread->start();
-    Thread* userThread = new Thread(userMainWrapper, sem);
-    userThread->start();
-    sem->wait();
 
-    delete sem;
+    Thread* worker = new Thread(joinWorker, nullptr);
+    worker->start();
 
+    worker->join(worker, 0);
+    Console::putc('J');
+    Console::putc('\n');
+
+    delete worker;
+    while (true)
+        thread_dispatch();
     return 0;
 }
