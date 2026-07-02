@@ -1,6 +1,7 @@
 #include "../h/syscall_cpp.hpp"
+#include "../h/KernelConsole.hpp"
 #include "../h/MemoryAllocator.hpp"
-
+List<PeriodicThread>* PeriodicThread::niz = nullptr;
 void* operator new(size_t size)
 {
     return MemoryAllocator::mem_alloc(size);
@@ -75,23 +76,44 @@ void Console::putc(char c) {
 }
 
 PeriodicThread::PeriodicThread(time_t period)
-    : Thread(&PeriodicThread::periodicThreadWrapper, this), period(period) {
+    : Thread(&PeriodicThread::periodicThreadWrapper, this),
+      period(period),
+      terminated(false) {
+    if (niz == nullptr) {
+        niz = new List<PeriodicThread>();
+    }
+    niz->addLast(this);
 }
 
 void PeriodicThread::terminate() {
-    period = 0;
+    terminated = true;
 }
 
 void PeriodicThread::periodicThreadWrapper(void* arg) {
     PeriodicThread* thread = (PeriodicThread*) arg;
 
-    while (thread->period != 0) {
+    while (!thread->terminated) {
         thread->periodicActivation();
 
-        if (thread->period == 0) {
+        if (thread->terminated) {
             break;
         }
 
         Thread::sleep(thread->period);
+    }
+}
+void PeriodicThread::getCThread(void* arg) {
+    Thread* getcHandlerThread =
+    new Thread(KernelConsole::getc_handler_wrapper, nullptr);
+    getcHandlerThread->start();
+    while (true) {
+        char c = ::getc();
+        if (c=='k') {
+            if (niz != nullptr && niz->peekFirst()!=nullptr) {
+                PeriodicThread::niz->peekFirst()->terminate();
+                niz->removeFirst();
+
+            }
+        }
     }
 }

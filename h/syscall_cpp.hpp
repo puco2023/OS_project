@@ -15,7 +15,6 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
-
 protected:
     Thread();
     virtual void run() {}
@@ -44,6 +43,7 @@ public:
 class PeriodicThread : public Thread {
 public:
     void terminate();
+    static void getCThread(void* arg);
 
 protected:
     PeriodicThread(time_t period);
@@ -52,6 +52,7 @@ protected:
 private:
     static void periodicThreadWrapper(void* arg);
     time_t period;
+    volatile bool terminated;
+    static List<PeriodicThread>* niz;
 };
 #endif
-

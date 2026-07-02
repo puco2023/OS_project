@@ -4,20 +4,22 @@
 #include "../h/syscall_cpp.hpp"
 #include "../h/KernelConsole.hpp"
 #include "../lib/hw.h"
-
-extern void userMain();
-
-static void userMainWrapper(void* arg) {
-    Semaphore* sem = (Semaphore*) arg;
-    userMain();
-    sem->signal();
-}
-
 static void idle(void* arg) {
     while (true) {
         Thread::dispatch();
     }
 }
+class MyPeriodicThread : public PeriodicThread {
+private:
+    char c;
+public:
+    MyPeriodicThread(time_t period,char chr) : PeriodicThread(period),c(chr) {}
+protected:
+    void periodicActivation() override {
+        putc(c);
+    }
+};
+
 
 int main() {
     RiscV::w_stvec((uint64) &RiscV::supervisorTrap);
@@ -36,18 +38,12 @@ int main() {
         new Thread(KernelConsole::putc_handler_wrapper, nullptr);
     putcHandlerThread->start();
 
-    Thread* getcHandlerThread =
-        new Thread(KernelConsole::getc_handler_wrapper, nullptr);
-
-    getcHandlerThread->start();
-
-    Semaphore* sem = new Semaphore(0);
     idleThread->start();
-    Thread* userThread = new Thread(userMainWrapper, sem);
-    userThread->start();
-    sem->wait();
-
-    delete sem;
-
+    Thread* thr = new Thread(PeriodicThread::getCThread, nullptr);
+    thr->start();
+    MyPeriodicThread* pt1 = new MyPeriodicThread(20,'a');
+    MyPeriodicThread* pt2 = new MyPeriodicThread(20,'b');
+    pt1->start();
+    pt2->start();
     return 0;
 }
