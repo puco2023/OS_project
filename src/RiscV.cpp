@@ -49,14 +49,11 @@ void RiscV::handleSupervisorTrap() {
             }
 
             case THREAD_CREATE: {
-                TCB* thread = new TCB((TCB::Body)arg2, (void*)arg3, (void*)arg4, DEFAULT_TIME_SLICE);
-                if (thread != nullptr) {
-                    *(TCB**)arg1 = thread;
-                    Scheduler::put(thread);
-                    ret = 0;
-                } else {
-                    ret = -1;
-                }
+                ret = TCB::createThread(
+                (TCB**)arg1,
+                (TCB::Body)arg2,
+                (void*)arg3,
+    (void*)arg4);
                 break;
             }
             case THREAD_EXIT: {
