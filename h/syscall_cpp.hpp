@@ -32,6 +32,7 @@ public:
     virtual ~Semaphore ();
     int wait ();
     int signal ();
+    static void pairSem(Semaphore* s1,Semaphore* s2);
 private:
     sem_t myHandle;
 };

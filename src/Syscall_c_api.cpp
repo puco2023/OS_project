@@ -191,3 +191,13 @@ void putc(char c) {
     __asm__ volatile("li a0, 0x42");
     __asm__ volatile("ecall");
 }
+void pair(sem_t s1,sem_t s2) {
+    __asm__ volatile(
+        "mv a1, %0\n\t"
+        "mv a2, %1\n\t"
+        "mv a0, %2\n\t"
+        "ecall\n\t"
+        :
+        :"r"(s1), "r"(s2), "r"((uint64)SEMPAIR)
+        : "a0", "a1", "a2", "memory");
+}

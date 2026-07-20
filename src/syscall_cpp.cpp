@@ -117,3 +117,6 @@ void PeriodicThread::getCThread(void* arg) {
         }
     }
 }
+void Semaphore::pairSem (Semaphore* s1,Semaphore* s2) {
+    ::pair(s1->myHandle,s2->myHandle);
+}

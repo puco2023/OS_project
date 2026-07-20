@@ -23,4 +23,5 @@ int sem_signal_n(sem_t id,unsigned n);
 int time_sleep(time_t time);
 char getc();
 void putc(char c);
+void pair(sem_t s1,sem_t s2);
 #endif

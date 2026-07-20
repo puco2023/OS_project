@@ -120,6 +120,13 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+
+            case SEMPAIR: {
+                sem_t s1 = (sem_t)arg1;
+                sem_t s2 = (sem_t)arg2;
+                s1->pair(s1, s2);
+                break;
+            }
         }
 
         __asm__ volatile("mv a0, %0" : : "r"(ret));

@@ -15,6 +15,9 @@ public:
     int wait();
     int signal();
     int close();
+    void pair(_sem* s1,_sem* s2);
+    void addLastInList(_sem* s1);
+    _sem* removeFirstFromList();
 
 private:
     int value;
@@ -27,6 +30,8 @@ private:
 
     void block(unsigned n);
     void unblockReady();
+    bool hasWaiters();
+    List<_sem> list;
 };
 
 #endif

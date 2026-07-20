@@ -16,5 +16,5 @@
 #define TIME_SLEEP 0x31
 #define GETC 0x41
 #define PUTC 0x42
-
+#define SEMPAIR 0x43
 #endif

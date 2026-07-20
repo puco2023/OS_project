@@ -45,7 +45,7 @@ int _sem::signal_n(unsigned n)
         MemoryAllocator::mem_free(node);
     }
 
-    return 0;
+    return 1;
 }
 void _sem::unblockReady()
 {
@@ -89,7 +89,32 @@ int _sem::wait()
 
 int _sem::signal()
 {
+    if (value>=0) {
+        _sem* first = this->removeFirstFromList();
+        if (first != nullptr) {
+            if (first->hasWaiters()) {
+                this->addLastInList(first);
+                return first->signal();
+            }
+            this->addLastInList(first);
+            _sem* it;
+            while ((it=this->removeFirstFromList())!=first)
+            {
+                if (it->hasWaiters()) {
+                    this->addLastInList(it);
+                    return it->signal();
+
+                }
+                this->addLastInList(it);
+            }
+            this->addLastInList(it);
+        }
+    }
     return signal_n(1);
+}
+bool _sem::hasWaiters()
+{
+    return head != nullptr;
 }
 int _sem::close()
 {
@@ -111,4 +136,18 @@ int _sem::close()
     tail = nullptr;
 
     return 0;
+}
+
+void _sem::addLastInList(_sem* s1) {
+    this->list.addLast(s1);
+}
+
+_sem* _sem::removeFirstFromList() {
+    _sem* s1 = this->list.removeFirst();
+    return s1;
+}
+
+void _sem::pair(_sem* s1, _sem* s2) {
+    s1->addLastInList(s2);
+    s2->addLastInList(s1);
 }
