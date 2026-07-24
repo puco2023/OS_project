@@ -15,7 +15,8 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
-
+    void joinAll();
+    void addChild(Thread* child);
 protected:
     Thread();
     virtual void run() {}
@@ -24,7 +25,6 @@ private:
     thread_t myHandle;
     void (*body)(void*);
     void* arg;
-
     static void wrapper(void* thread);
 };
 class Semaphore {

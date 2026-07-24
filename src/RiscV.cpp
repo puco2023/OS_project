@@ -57,10 +57,7 @@ void RiscV::handleSupervisorTrap() {
                 break;
             }
             case THREAD_EXIT: {
-                TCB::running->setFinished(true);
-                TCB::timeSliceCounter = 0;
-
-                TCB::dispatch();
+                TCB::running->thread_exit();
 
                 w_sstatus(sstatus);
                 w_sepc(sepc);
@@ -118,6 +115,15 @@ void RiscV::handleSupervisorTrap() {
             case PUTC: {
                 char c = (char)arg1;
                 KernelConsole::getInstance()->putc(c);
+                break;
+            }
+            case JOIN_ALL: {
+                TCB::joinAll();
+                break;
+            }
+            case ADD_CHILD: {
+                TCB* child = (TCB*)arg1;
+                TCB::addChild(child);
                 break;
             }
         }

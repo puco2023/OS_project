@@ -191,3 +191,20 @@ void putc(char c) {
     __asm__ volatile("li a0, 0x42");
     __asm__ volatile("ecall");
 }
+void add_child(thread_t child) {
+    __asm__ volatile(
+        "mv a1,%0\n\t"
+        "mv a0, %1\n\t"
+        "ecall\n\t"
+        :
+        :"r"(child),"r"((uint64)ADD_CHILD)
+        : "a0","a1","memory");
+}
+void join_all() {
+    __asm__ volatile(
+        "mv a0, %0\n\t"
+        "ecall\n\t"
+        :
+        :"r"((uint64)JOIN_ALL)
+        :"a0","memory");
+}

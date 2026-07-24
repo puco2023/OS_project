@@ -4,20 +4,57 @@
 #include "../h/syscall_cpp.hpp"
 #include "../h/KernelConsole.hpp"
 #include "../lib/hw.h"
-
+#include "../h/Printing.hpp"
 extern void userMain();
-
-static void userMainWrapper(void* arg) {
-    Semaphore* sem = (Semaphore*) arg;
-    userMain();
-    sem->signal();
-}
 
 static void idle(void* arg) {
     while (true) {
         Thread::dispatch();
     }
 }
+
+class ThreadC : public Thread {
+protected:
+    void run() override {
+        printString("Nit C radi\n");
+    }
+};
+
+class ThreadB : public Thread {
+protected:
+    void run() override {
+        ThreadC* children[3];
+        for (int i = 0; i < 3; i++) {
+            children[i] = new ThreadC();
+            children[i]->start();
+            addChild(children[i]);
+        }
+
+        printString("Nit B napravila 3 niti C, ceka joinAll\n");
+        joinAll();
+        printString("Nit B - sva deca C su zavrsila\n");
+    }
+};
+
+class ThreadA : public Thread {
+protected:
+    void run() override {
+        ThreadB* bChildren[3];
+        for (int i = 0; i < 3; i++) {
+            bChildren[i] = new ThreadB();
+            bChildren[i]->start();
+            addChild(bChildren[i]);
+        }
+
+        ThreadC* cChild = new ThreadC();
+        cChild->start();
+        addChild(cChild);
+
+        printString("Nit A napravila 3 niti B i 1 nit C, ceka joinAll\n");
+        joinAll();
+        printString("Nit A - sva deca su zavrsila\n");
+    }
+};
 
 int main() {
     RiscV::w_stvec((uint64) &RiscV::supervisorTrap);
@@ -41,13 +78,11 @@ int main() {
 
     getcHandlerThread->start();
 
-    Semaphore* sem = new Semaphore(0);
-    idleThread->start();
-    Thread* userThread = new Thread(userMainWrapper, sem);
-    userThread->start();
-    sem->wait();
+    ThreadA* a = new ThreadA();
+    a->start();
 
-    delete sem;
+    idleThread->start();
+
 
     return 0;
 }

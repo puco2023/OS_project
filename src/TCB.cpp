@@ -46,7 +46,6 @@ void TCB::dispatch()
     if (!old->isFinished() && !old->isBlocked()) {
         Scheduler::put(old);
     }
-
     TCB* next = Scheduler::get();
 
     if (next == nullptr) {
@@ -72,8 +71,8 @@ void TCB::threadWrapper()
 
     running->body(running->arg);
 
-    running->setFinished(true);
-    TCB::yield();
+    __asm__ volatile("li a0, 0x12");
+    __asm__ volatile("ecall");
 }
 int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
 {
@@ -144,15 +143,11 @@ int TCB::thread_exit()
     }
     if (running->isBlocked())
     {return -3;}
-
-    TCB* next = Scheduler::get();
-
-    if (next == nullptr) {
-        return -3;
+    if ((TCB::running->parrent!=nullptr))
+    {
+        TCB::running->parrent->activeChildrenCounter--;
+        TCB::running->parrent->semaphore->signal();
     }
-
-    Scheduler::put(next);
-
     running->setFinished(true);
     timeSliceCounter = 0;
 
@@ -160,3 +155,16 @@ int TCB::thread_exit()
 
     return 1;
 }
+void TCB::addChild(TCB* child) {
+    TCB::running->activeChildrenCounter++;
+    child->parrent = TCB::running;
+    if (TCB::running->activeChildrenCounter==1)
+        TCB::running->semaphore = new _sem(0);
+
+}
+void TCB::joinAll() {
+    int childrenCount = TCB::running->activeChildrenCounter;
+    for (int i=0;i<childrenCount;i++)
+        TCB::running->semaphore->wait();
+}
+

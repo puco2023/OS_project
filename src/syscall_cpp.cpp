@@ -95,3 +95,9 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
         Thread::sleep(thread->period);
     }
 }
+void Thread::joinAll() {
+    ::join_all();
+}
+void Thread::addChild(Thread* thread) {
+    ::add_child(thread->myHandle);
+}
