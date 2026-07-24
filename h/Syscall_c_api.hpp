@@ -23,6 +23,11 @@ int sem_signal_n(sem_t id,unsigned n);
 int time_sleep(time_t time);
 char getc();
 void putc(char c);
+<<<<<<< Updated upstream
 void pair(thread_t, thread_t);
 void _sync();
+=======
+void pair(thread_t t1,thread_t t2);
+void sync();
+>>>>>>> Stashed changes
 #endif

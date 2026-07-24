@@ -162,6 +162,7 @@ int TCB::thread_exit()
     return 1;
 }
 void TCB::pair(TCB* t1,TCB* t2) {
+<<<<<<< Updated upstream
     t1->semaphorePair = new _sem(0);
     t2->semaphorePair = new _sem(0);
     t1->pairThread=t2;
@@ -180,3 +181,18 @@ void TCB::sync(TCB* t1) {
         t2->semaphorePair->signal();
     }
 }
+=======
+    t1->pairThread= t2;
+    t2->pairThread = t1;
+    t1->sem = new _sem(0);
+    t2->sem = new _sem(0);
+}
+void TCB::sync(){
+    this->wasSync = true;
+    if (this->pairThread->wasSync) {
+        this->pairThread->sem->signal();
+    }
+    else
+        this->sem->wait();
+}
+>>>>>>> Stashed changes

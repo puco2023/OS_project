@@ -15,9 +15,14 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
+<<<<<<< Updated upstream
     static void pair(Thread*, Thread*);
     void sync();
     thread_t getMyHandle(){return myHandle;}
+=======
+    static void pair(Thread* t1,Thread* t2);
+    void sync();
+>>>>>>> Stashed changes
 protected:
     Thread();
     virtual void run() {}

@@ -3,6 +3,10 @@
 
 #include "Scheduler.hpp"
 #include "../lib/hw.h"
+<<<<<<< Updated upstream
+=======
+#include "Semaphore.hpp"
+>>>>>>> Stashed changes
 class _sem;
 class TCB {
 public:
@@ -46,10 +50,16 @@ public:
           nextSleeping(nullptr),
           timeSlice(timeSlice),
           pairThread(nullptr),
+<<<<<<< Updated upstream
           semaphorePair(nullptr),
           isCalled(false)
+=======
+          sem(nullptr),
+          wasSync(false)
+>>>>>>> Stashed changes
     {
     }
+
     int thread_exit();
     struct Context {
         uint64 ra;
@@ -67,8 +77,13 @@ public:
         uint64 s10;
         uint64 s11;
     };
+<<<<<<< Updated upstream
     static void pair(TCB* t1, TCB* t2);
     static void sync(TCB* t1);
+=======
+    static void pair(TCB* t1,TCB* t2);
+    void sync();
+>>>>>>> Stashed changes
 private:
 
 
@@ -101,8 +116,13 @@ private:
     static void threadWrapper();
     static void idleBody(void*);
     TCB* pairThread;
+<<<<<<< Updated upstream
     _sem* semaphorePair;
     bool isCalled;
+=======
+    _sem* sem;
+    bool wasSync;
+>>>>>>> Stashed changes
 };
 
 #endif

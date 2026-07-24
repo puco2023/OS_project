@@ -97,8 +97,16 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
 }
 
 void Thread::pair(Thread *t1, Thread *t2) {
+<<<<<<< Updated upstream
     ::pair(t1->getMyHandle(), t2->getMyHandle());
 }
 void Thread::sync() {
     _sync();
+=======
+    ::pair(t1->myHandle, t2->myHandle);
+}
+void Thread::sync()
+{
+    ::sync();
+>>>>>>> Stashed changes
 }

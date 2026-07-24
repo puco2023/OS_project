@@ -195,6 +195,7 @@ void pair(thread_t t1,thread_t t2) {
     __asm__ volatile(
         "mv a1, %0\n\t"
         "mv a2, %1\n\t"
+<<<<<<< Updated upstream
         "li a0, 0x14\n\t"
         "ecall"
         :
@@ -205,4 +206,20 @@ void pair(thread_t t1,thread_t t2) {
 void _sync() {
     __asm__ volatile("li a0,0x15");
     __asm__ volatile("ecall");
+=======
+        "mv a0, %2\n\t"
+        "ecall\n\t"
+        :
+        :"r"(t1),"r"(t2),"r"((uint64)SEM_PAIR)
+        :"a0", "a1", "a2", "memory"
+        );
+}
+void sync() {
+    __asm__ volatile(
+        "mv a0, %0\n\t"
+        "ecall\n\t"
+        :
+        :"r"((uint64)SEM_SYNC)
+        :"a0", "memory");
+>>>>>>> Stashed changes
 }

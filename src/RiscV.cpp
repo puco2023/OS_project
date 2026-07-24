@@ -123,6 +123,7 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+<<<<<<< Updated upstream
             case PAIR: {
                 TCB* t1 = (TCB*) arg1;
                 TCB* t2 = (TCB*) arg2;
@@ -131,6 +132,16 @@ void RiscV::handleSupervisorTrap() {
             }
             case SYNC:{
                 TCB::sync(TCB::running);
+=======
+            case SEM_PAIR: {
+                TCB* t1 = (TCB*)arg1;
+                TCB* t2 = (TCB*)arg2;
+                TCB::pair(t1,t2);
+                return;
+            }
+            case SEM_SYNC: {
+                TCB::running->sync();
+>>>>>>> Stashed changes
                 break;
             }
         }
