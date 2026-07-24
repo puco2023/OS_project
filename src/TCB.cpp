@@ -69,11 +69,9 @@ void TCB::dispatch()
 void TCB::threadWrapper()
 {
     RiscV::popSppSpie();
-
     running->body(running->arg);
-
-    running->setFinished(true);
-    TCB::yield();
+    __asm__ volatile("li a0, 0x12");
+    __asm__ volatile("ecall");
 }
 int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
 {
@@ -144,14 +142,6 @@ int TCB::thread_exit()
     }
     if (running->isBlocked())
     {return -3;}
-
-    TCB* next = Scheduler::get();
-
-    if (next == nullptr) {
-        return -3;
-    }
-
-    Scheduler::put(next);
 
     running->setFinished(true);
     timeSliceCounter = 0;

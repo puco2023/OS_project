@@ -57,11 +57,7 @@ void RiscV::handleSupervisorTrap() {
                 break;
             }
             case THREAD_EXIT: {
-                TCB::running->setFinished(true);
-                TCB::timeSliceCounter = 0;
-
-                TCB::dispatch();
-
+                TCB::running->thread_exit();
                 w_sstatus(sstatus);
                 w_sepc(sepc);
                 return;
