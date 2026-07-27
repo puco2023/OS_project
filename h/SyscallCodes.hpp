@@ -16,5 +16,9 @@
 #define TIME_SLEEP 0x31
 #define GETC 0x41
 #define PUTC 0x42
+<<<<<<< Updated upstream
 #define SETMAXIMUMTHREADS 0x15
+=======
+#define SET_MAXIMUM_THREADS 0x43
+>>>>>>> Stashed changes
 #endif

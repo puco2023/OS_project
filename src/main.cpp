@@ -4,16 +4,21 @@
 #include "../h/syscall_cpp.hpp"
 #include "../h/KernelConsole.hpp"
 #include "../lib/hw.h"
+<<<<<<< Updated upstream
 
 extern void userMain();
 
 _sem* printSem = nullptr;
 
+=======
+#include"../h/Printing.hpp"
+>>>>>>> Stashed changes
 static void idle(void* arg) {
     while (true) {
         Thread::dispatch();
     }
 }
+<<<<<<< Updated upstream
 void printString(const char* string) {
     while (*string!='\0') {
         putc(*string);
@@ -62,6 +67,19 @@ private:
         printString("\n");
         printSem->signal();
         sleep(50);
+=======
+class ThreadA:public Thread{
+public:
+    int id;
+    ThreadA(int id):Thread() {
+        this->id = id;
+    }
+    void run()override {
+        printString("cao ja sam nit broj");
+        printInteger(this->id);
+        printString("\n");
+        sleep(10);
+>>>>>>> Stashed changes
     }
 };
 int main() {
@@ -86,6 +104,7 @@ int main() {
         new Thread(KernelConsole::getc_handler_wrapper, nullptr);
 
     getcHandlerThread->start();
+<<<<<<< Updated upstream
     idleThread->start();
     Thread::setMaximumThreads(3,20,10);
     for (int i=0;i<20;i++) {
@@ -96,3 +115,26 @@ int main() {
         thread_dispatch();
     }
 }
+=======
+
+    //Semaphore* sem = new Semaphore(0);
+    idleThread->start();
+    //Thread* userThread = new Thread(userMainWrapper, sem);
+    //userThread->start();
+    //sem->wait();
+
+    //delete sem;
+    //Thread::setMaximumThreads(3,20,10);
+    ThreadA* ta[20];
+    for (int i=0;i<20;i++) {
+        ta[i] = new ThreadA(i);
+    }
+    Thread::setMaximumThreads(3,20,10);
+
+    for (int i=0;i<20;i++) {
+        ta[i]->start();
+    }
+
+    return 0;
+}
+>>>>>>> Stashed changes

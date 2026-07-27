@@ -3,6 +3,7 @@
 
 #include "Scheduler.hpp"
 #include "../lib/hw.h"
+class _sem;
 class TCB {
 public:
     ~TCB() { delete[] stack; }
@@ -63,8 +64,13 @@ public:
         uint64 s10;
         uint64 s11;
     };
+<<<<<<< Updated upstream
     static void setMaximumThreads(int num_of_threads, int max_time, int interval_time);
     static void counter(void* arg);
+=======
+    static void setMaximumThreads(int numofthreads,int maxtime,int intervaltime);
+    static void startClock(void*);
+>>>>>>> Stashed changes
 private:
 
 
@@ -96,12 +102,22 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+<<<<<<< Updated upstream
     static int maxThreads;
     static int maxTime;
     static int intervalTime;
     static int currThreads;
     static List<TCB> niz;
     static bool isModeOn;
+=======
+    _sem* semaphore;
+    static List<TCB> threads;
+    static int numberOfThreads;
+    static int maxTime;
+    static int intervalTime;
+    static bool modeIsOn;
+    static int currMade;
+>>>>>>> Stashed changes
 };
 
 #endif

@@ -96,6 +96,12 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
     }
 }
 
+<<<<<<< Updated upstream
 void Thread::setMaximumThreads(int num_of_threads, int max_time, int interval_time) {
     ::setMaxThreads(num_of_threads,max_time,interval_time);
+=======
+void Thread::setMaximumThreads(int numOfThreads, int maxTime, int intervalTime) {
+
+    ::setMaximumThreads(numOfThreads, maxTime, intervalTime);
+>>>>>>> Stashed changes
 }

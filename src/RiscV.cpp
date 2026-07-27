@@ -120,8 +120,16 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+<<<<<<< Updated upstream
             case SETMAXIMUMTHREADS:{
                 TCB::setMaximumThreads((int)arg1,(int)arg2,(int)arg3);
+=======
+            case SET_MAXIMUM_THREADS: {
+                int a1 = (int)arg1;
+                int a2= (int)arg2;
+                int a3=(int)arg3;
+                TCB::setMaximumThreads(a1,a2,a3);
+>>>>>>> Stashed changes
                 break;
             }
         }

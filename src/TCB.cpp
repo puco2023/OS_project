@@ -7,6 +7,7 @@ TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCounter = 0;
 TCB* TCB::idleThread = nullptr;
 TCB* TCB::sleepingHead = nullptr;
+<<<<<<< Updated upstream
 
 int TCB::maxThreads=0;
 int TCB::intervalTime=0;
@@ -14,6 +15,14 @@ int TCB::maxTime=0;
 int TCB::currThreads=0;
 List<TCB> TCB::niz;
 bool TCB::isModeOn = false;
+=======
+List<TCB> TCB::threads;
+int TCB::numberOfThreads=0;
+int TCB::maxTime=0;
+int TCB::intervalTime=0;
+bool TCB::modeIsOn=false;
+int TCB::currMade=0;
+>>>>>>> Stashed changes
 void TCB::idleBody(void*)
 {
     while (true) {
@@ -102,7 +111,16 @@ int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
         return -3;
     }
     TCB* t = new TCB(body, arg, stack_space, DEFAULT_TIME_SLICE);
+    if (TCB::modeIsOn==true) {
+        if (TCB::currMade-1==TCB::numberOfThreads) {
+            TCB::threads.addLast(t);
+            return 0;
+        }
+        else {
+            TCB::currMade++;
 
+        }
+    }
     if (t == nullptr) {
         return -4;
     }
@@ -181,6 +199,7 @@ int TCB::thread_exit()
 
     return 1;
 }
+<<<<<<< Updated upstream
 void TCB::counter(void* arg) {
     TCB::sleep(maxTime);
 
@@ -204,4 +223,24 @@ void TCB::setMaximumThreads(int num_of_threads,int max_time,int interval_time) {
     TCB* t;
     createThread(&t,counter,nullptr,stack);
     TCB::isModeOn=true;
+=======
+void TCB::startClock(void*) {
+    TCB::sleep(TCB::maxTime);
+    TCB* t=nullptr;
+    while ((t = threads.removeFirst())!=nullptr) {
+        TCB::sleep(TCB::intervalTime);
+        Scheduler::put(t);
+    }
+    TCB::modeIsOn=false;
+}
+
+void TCB::setMaximumThreads(int numofthreads,int maxtime,int intervaltime) {
+    TCB::numberOfThreads = numofthreads;
+    TCB::maxTime = maxtime;
+    TCB::intervalTime = intervaltime;
+    TCB::modeIsOn=true;
+    TCB::currMade=0;
+    void* stack = MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE);
+    Scheduler::put(new TCB(&startClock,nullptr,stack,DEFAULT_TIME_SLICE));
+>>>>>>> Stashed changes
 }

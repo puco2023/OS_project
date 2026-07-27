@@ -15,10 +15,10 @@ private:
     };
 
     Elem *head, *tail;
-
+    int size;
 public:
 
-    List() : head(0), tail(0) {}
+    List() : head(0), tail(0),size(0) {}
 
     List(const List<T>&) = delete;
 
@@ -29,6 +29,7 @@ public:
         Elem *elem = new Elem(data, head);
         head = elem;
         if (!tail) { tail = head; }
+        size++;
     }
 
     void addLast(T *data)
@@ -44,6 +45,7 @@ public:
         {
             head = tail = elem;
         }
+        size++;
     }
 
     T *removeFirst()
@@ -57,6 +59,7 @@ public:
         T *ret = elem->data;
         delete elem;
         return ret;
+        size--;
     }
 
     T *peekFirst()
@@ -86,6 +89,7 @@ public:
         T *ret = elem->data;
         delete elem;
         return ret;
+        size--;
     }
 
     T *peekLast()
@@ -93,6 +97,7 @@ public:
         if (!tail) { return 0; }
         return tail->data;
     }
+    int getSize(){return size;}
 };
 
 #endif

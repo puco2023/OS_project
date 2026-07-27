@@ -15,7 +15,11 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
+<<<<<<< Updated upstream
     static void setMaximumThreads(int num_of_threads,int max_time,int interval_time);
+=======
+    static void setMaximumThreads(int numOfThreads,int maxTime,int intervalTime);
+>>>>>>> Stashed changes
 protected:
     Thread();
     virtual void run() {}
