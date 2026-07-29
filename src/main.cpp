@@ -4,13 +4,32 @@
 #include "../h/syscall_cpp.hpp"
 #include "../h/KernelConsole.hpp"
 #include "../lib/hw.h"
+<<<<<<< HEAD
 
 extern void userMain();
+=======
+#include"../h/Printing.hpp"
+
+>>>>>>> bolja verzija
 static void idle(void* arg) {
     while (true) {
         Thread::dispatch();
     }
 }
+class ThreadA : public Thread {
+public:
+    void run() override {
+        printString("cao ja sam prva nit\n");
+        sleep(80);
+    }
+};
+class ThreadB:public Thread {
+public:
+    void run() override {
+        printString("cao ja sam druga nit\n");
+        sleep(100);
+    }
+};
 
 static void joinWorker(void* arg) {
     (void)arg;
@@ -46,6 +65,7 @@ int main() {
 
     idleThread->start();
 
+<<<<<<< HEAD
     Thread* worker = new Thread(joinWorker, nullptr);
     worker->start();
 
@@ -56,5 +76,15 @@ int main() {
     delete worker;
     while (true)
         thread_dispatch();
+=======
+    ThreadA* ta = new ThreadA();
+    Thread* tb = new ThreadB();
+
+    ta->start();
+    tb->start();
+    ta->join(1);
+    tb->join(10);
+    printString("niti su prosle\n");
+>>>>>>> bolja verzija
     return 0;
 }

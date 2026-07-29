@@ -191,6 +191,7 @@ void putc(char c) {
     __asm__ volatile("li a0, 0x42");
     __asm__ volatile("ecall");
 }
+<<<<<<< HEAD
 void _join(TCB* t, int time) {
     __asm__ volatile("mv a1,%0\n\t"
                     "mv a2,%1\n\t"
@@ -200,4 +201,15 @@ void _join(TCB* t, int time) {
                     :"r"((uint64)t), "r"((uint64)time),"r"((uint64)JOIN)
                     : "a0","a1","a2","memory"
         );
+=======
+void thread_join(thread_t* thread, time_t time) {
+    __asm__ volatile(
+        "mv a1, %0\n\t"
+        "mv a2, %1\n\t"
+        "mv a0, %2\n\t"
+        "ecall\n\t"
+        :
+        : "r"(thread), "r"(time), "r"((uint64)THREAD_JOIN)
+        : "a1", "a2","a0","memory");
+>>>>>>> bolja verzija
 }

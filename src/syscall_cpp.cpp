@@ -95,9 +95,15 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
         Thread::sleep(thread->period);
     }
 }
+<<<<<<< HEAD
 
 void Thread::join(Thread *t, time_t time) {
     TCB* t12 = (TCB*)t->myHandle;
     ::_join(t12,(int)time);
 
 }
+=======
+void Thread::join(int time) {
+    ::thread_join(&this->myHandle, time);
+}
+>>>>>>> bolja verzija

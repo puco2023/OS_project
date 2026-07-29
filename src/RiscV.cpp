@@ -116,10 +116,15 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+<<<<<<< HEAD
             case JOIN: {
                 TCB* child = (TCB*)arg1;
                 int time = (int)arg2;
                 TCB::running->join(TCB::running, child, time);
+=======
+            case THREAD_JOIN:{
+                TCB::thread_join((int)arg2, *(TCB**)arg1);
+>>>>>>> bolja verzija
                 break;
             }
         }

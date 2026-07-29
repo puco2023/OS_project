@@ -4,6 +4,10 @@
 #include "Scheduler.hpp"
 #include "../h/Semaphore.hpp"
 #include "../lib/hw.h"
+<<<<<<< HEAD
+=======
+#include "Semaphore.hpp"
+>>>>>>> bolja verzija
 class _sem;
 class TCB {
 public:
@@ -46,11 +50,18 @@ public:
           sleepTime(0),
           nextSleeping(nullptr),
           timeSlice(timeSlice),
+<<<<<<< HEAD
           parrent(nullptr),
           semaphore(nullptr),
           isChildFinished(false)
+=======
+          sem(nullptr),
+          parrent(nullptr)
+>>>>>>> bolja verzija
     {
     }
+
+
     int thread_exit();
     struct Context {
         uint64 ra;
@@ -68,9 +79,14 @@ public:
         uint64 s10;
         uint64 s11;
     };
+<<<<<<< HEAD
 
     void join(TCB* parrent,TCB* child, int time);
     void counter(void* arg);
+=======
+    static void thread_join(int time,TCB* t1);
+    static void timer(void* arg);
+>>>>>>> bolja verzija
 private:
 
 
@@ -102,9 +118,14 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+<<<<<<< HEAD
     TCB* parrent;
     _sem* semaphore;
     bool isChildFinished;
+=======
+    _sem* sem;
+    TCB* parrent;
+>>>>>>> bolja verzija
 };
 
 #endif
