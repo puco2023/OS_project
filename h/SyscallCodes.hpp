@@ -16,5 +16,5 @@
 #define TIME_SLEEP 0x31
 #define GETC 0x41
 #define PUTC 0x42
-#define THREAD_JOIN 0x14
+
 #endif

@@ -4,27 +4,20 @@
 #include "../h/syscall_cpp.hpp"
 #include "../h/KernelConsole.hpp"
 #include "../lib/hw.h"
-#include"../h/Printing.hpp"
+
+extern void userMain();
+
+static void userMainWrapper(void* arg) {
+    Semaphore* sem = (Semaphore*) arg;
+    userMain();
+    sem->signal();
+}
 
 static void idle(void* arg) {
     while (true) {
         Thread::dispatch();
     }
 }
-class ThreadA : public Thread {
-public:
-    void run() override {
-        printString("cao ja sam prva nit\n");
-        sleep(80);
-    }
-};
-class ThreadB:public Thread {
-public:
-    void run() override {
-        printString("cao ja sam druga nit\n");
-        sleep(100);
-    }
-};
 
 int main() {
     RiscV::w_stvec((uint64) &RiscV::supervisorTrap);
@@ -48,15 +41,13 @@ int main() {
 
     getcHandlerThread->start();
 
+    Semaphore* sem = new Semaphore(0);
     idleThread->start();
+    Thread* userThread = new Thread(userMainWrapper, sem);
+    userThread->start();
+    sem->wait();
 
-    ThreadA* ta = new ThreadA();
-    Thread* tb = new ThreadB();
+    delete sem;
 
-    ta->start();
-    tb->start();
-    ta->join(1);
-    tb->join(10);
-    printString("niti su prosle\n");
     return 0;
 }
