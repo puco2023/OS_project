@@ -3,6 +3,8 @@
 
 #include "Scheduler.hpp"
 #include "../lib/hw.h"
+#include "Semaphore.hpp"
+class _sem;
 class TCB {
 public:
     ~TCB() { delete[] stack; }
@@ -43,9 +45,13 @@ public:
           blocked(false),
           sleepTime(0),
           nextSleeping(nullptr),
-          timeSlice(timeSlice)
+          timeSlice(timeSlice),
+          sem(nullptr),
+          parrent(nullptr)
     {
     }
+
+
     int thread_exit();
     struct Context {
         uint64 ra;
@@ -63,6 +69,8 @@ public:
         uint64 s10;
         uint64 s11;
     };
+    static void thread_join(int time,TCB* t1);
+    static void timer(void* arg);
 private:
 
 
@@ -94,6 +102,8 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+    _sem* sem;
+    TCB* parrent;
 };
 
 #endif

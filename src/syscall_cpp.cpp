@@ -95,3 +95,6 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
         Thread::sleep(thread->period);
     }
 }
+void Thread::join(int time) {
+    ::thread_join(&this->myHandle, time);
+}

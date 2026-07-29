@@ -116,6 +116,10 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+            case THREAD_JOIN:{
+                TCB::thread_join((int)arg2, *(TCB**)arg1);
+                break;
+            }
         }
 
         __asm__ volatile("mv a0, %0" : : "r"(ret));

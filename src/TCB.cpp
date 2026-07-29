@@ -3,6 +3,7 @@
 #include "../h/Scheduler.hpp"
 #include "../h/MemoryAllocator.hpp"
 #include "../lib/console.h"
+#include "../h/Syscall_c_api.hpp"
 TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCounter = 0;
 TCB* TCB::idleThread = nullptr;
@@ -142,11 +143,52 @@ int TCB::thread_exit()
     }
     if (running->isBlocked())
     {return -3;}
-
+    if (running->parrent!=nullptr && running->parrent->sem!=nullptr) {
+        running->parrent->sem->signal();
+        delete running->parrent->sem;
+        running->parrent->sem = nullptr;
+    }
     running->setFinished(true);
     timeSliceCounter = 0;
 
     dispatch();
 
     return 1;
+}
+namespace {
+struct JoinTimerArg {
+    int time;
+    TCB* target;
+    TCB* caller;
+};
+}
+
+void TCB::timer(void* arg) {
+    JoinTimerArg* joinArg = (JoinTimerArg*)arg;
+    int time = joinArg->time;
+    TCB* t1 = joinArg->target;
+    TCB* caller = joinArg->caller;
+    MemoryAllocator::mem_free(joinArg);
+
+    ::time_sleep((time_t)time);
+
+    if (!t1->isFinished() && caller->sem != nullptr) {
+        caller->sem->signal();
+        delete caller->sem;
+        caller->sem = nullptr;
+    }
+}
+
+void TCB::thread_join(int time,TCB* t1) {
+    JoinTimerArg* joinArg = (JoinTimerArg*)MemoryAllocator::mem_alloc(sizeof(JoinTimerArg));
+    joinArg->time = time;
+    joinArg->target = t1;
+    joinArg->caller = TCB::running;
+
+    void* stack = MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE);
+    Scheduler::put(new TCB(&timer, joinArg, stack, DEFAULT_TIME_SLICE));
+    t1->parrent = TCB::running;
+    if (TCB::running->sem==nullptr)
+        TCB::running->sem = new _sem(0);
+    TCB::running->sem->wait();
 }
