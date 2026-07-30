@@ -93,6 +93,22 @@ public:
         if (!tail) { return 0; }
         return tail->data;
     }
+    void removeElement(T* element) {
+        Elem *curr = head;
+        Elem* prev=nullptr;
+        while (curr) {
+            if (curr->data == element) {
+                if (prev) {
+                    prev->next = curr->next;
+                }
+                else {
+                    head = curr->next;
+                }
+            }
+            prev=curr;
+            curr = curr->next;
+        }
+    }
 };
 
 #endif

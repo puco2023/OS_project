@@ -5,15 +5,19 @@
 #include "../h/MemoryAllocator.hpp"
 #include"../h/Syscall_c_api.hpp"
 #include "../h/KernelConsole.hpp"
+#include "../h/TCB.hpp"
 void RiscV::handleSupervisorTrap() {
-    uint64 code, arg1, arg2, arg3, arg4;
+    uint64 code, arg1, arg2, arg3, arg4,arg5;
     __asm__ volatile(
         "mv %0, a0\n\t"
         "mv %1, a1\n\t"
         "mv %2, a2\n\t"
         "mv %3, a3\n\t"
-        "mv %4, a4"
-        : "=r"(code), "=r"(arg1), "=r"(arg2), "=r"(arg3), "=r"(arg4)
+        "mv %4, a4\n\t"
+        "mv %5, a5"
+        : "=r"(code), "=r"(arg1), "=r"(arg2), "=r"(arg3), "=r"(arg4),"=r"(arg5)
+        :
+        : "a0", "a1", "a2", "a3", "a4", "a5"
     );
 
     uint64 scause = r_scause();
@@ -53,7 +57,8 @@ void RiscV::handleSupervisorTrap() {
                 (TCB**)arg1,
                 (TCB::Body)arg2,
                 (void*)arg3,
-    (void*)arg4);
+    (void*)arg4,
+    (TCB::Priority)arg5);
                 break;
             }
             case THREAD_EXIT: {

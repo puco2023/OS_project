@@ -5,6 +5,11 @@
 #include "../lib/hw.h"
 class TCB {
 public:
+    enum Priority {
+        low=1,
+        medium=2,
+        high=3
+    };
     ~TCB() { delete[] stack; }
 
     bool isFinished() const {
@@ -22,7 +27,7 @@ public:
     static void tickSleeping();
     using Body = void (*)(void*);
     bool isFinished(){return finished;}
-    static int createThread(TCB** handle, Body body, void* arg, void* stack_space);
+    static int createThread(TCB** handle, Body body, void* arg, void* stack_space,Priority p);
     static void yield();
     void setBlocked(bool b){this->blocked=b;}
     bool isBlocked() {return blocked;}
@@ -30,7 +35,7 @@ public:
     static void dispatch();
     static TCB* createMainThread();
     static void initIdleThread();
-    explicit TCB(Body body, void* arg, void* stack_space, uint64 timeSlice)
+    explicit TCB(Body body, void* arg, void* stack_space, uint64 timeSlice,Priority p)
         : body(body),
           arg(arg),
           stack((uint64*)stack_space),
@@ -43,7 +48,7 @@ public:
           blocked(false),
           sleepTime(0),
           nextSleeping(nullptr),
-          timeSlice(timeSlice)
+          timeSlice(timeSlice), priority(p)
     {
     }
     int thread_exit();
@@ -63,6 +68,9 @@ public:
         uint64 s10;
         uint64 s11;
     };
+    Priority getPriority() {
+        return priority;
+    }
 private:
 
 
@@ -94,6 +102,7 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+    Priority priority;
 };
 
 #endif

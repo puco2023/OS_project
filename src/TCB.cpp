@@ -24,13 +24,13 @@ void TCB::initIdleThread()
         return;
     }
 
-    idleThread = new TCB(idleBody, nullptr, stack_space, DEFAULT_TIME_SLICE);
+    idleThread = new TCB(idleBody, nullptr, stack_space, DEFAULT_TIME_SLICE,low);
 }
 
 TCB* TCB::createMainThread()
 {
     initIdleThread();
-    return new TCB(nullptr, nullptr, nullptr, DEFAULT_TIME_SLICE);
+    return new TCB(nullptr, nullptr, nullptr, DEFAULT_TIME_SLICE,low);
 }
 
 void TCB::yield()
@@ -73,7 +73,7 @@ void TCB::threadWrapper()
     __asm__ volatile("li a0, 0x12");
     __asm__ volatile("ecall");
 }
-int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
+int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space,Priority p)
 {
     if (handle == nullptr) {
         return -1;
@@ -87,7 +87,7 @@ int TCB::createThread(TCB** handle, Body body, void* arg, void* stack_space)
         return -3;
     }
 
-    TCB* t = new TCB(body, arg, stack_space, DEFAULT_TIME_SLICE);
+    TCB* t = new TCB(body, arg, stack_space, DEFAULT_TIME_SLICE,p);
 
     if (t == nullptr) {
         return -4;

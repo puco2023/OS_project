@@ -34,7 +34,7 @@ size_t mem_get_largest_free_block() {
     __asm__ volatile("mv %0, a0":"=r"(ret));
     return ret;
 }
-int thread_create(thread_t* handle, void (*start_routine)(void*), void* arg)
+int thread_create(thread_t* handle, void (*start_routine)(void*), void* arg, TCB::Priority p)
 {
     void* stack_space = mem_alloc(DEFAULT_STACK_SIZE);
     if (stack_space == nullptr) {
@@ -44,16 +44,17 @@ int thread_create(thread_t* handle, void (*start_routine)(void*), void* arg)
     uint64 ret;
 
     __asm__ volatile(
-        "mv a4, %1\n\t"
-        "mv a3, %2\n\t"
-        "mv a2, %3\n\t"
-        "mv a1, %4\n\t"
-        "mv a0, %5\n\t"
+        "mv a5, %1\n\t"
+        "mv a4, %2\n\t"
+        "mv a3, %3\n\t"
+        "mv a2, %4\n\t"
+        "mv a1, %5\n\t"
+        "mv a0, %6\n\t"
         "ecall\n\t"
         "mv %0, a0"
         : "=r"(ret)
-        : "r"(stack_space), "r"(arg), "r"(start_routine), "r"(handle), "r"((uint64)THREAD_CREATE)
-        : "a0", "a1", "a2", "a3", "a4", "memory"
+        : "r"(p),"r"(stack_space), "r"(arg), "r"(start_routine), "r"(handle), "r"((uint64)THREAD_CREATE)
+        : "a0", "a1", "a2", "a3", "a4", "a5","memory"
     );
 
     return (int)ret;

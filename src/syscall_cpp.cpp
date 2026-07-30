@@ -11,13 +11,13 @@ void operator delete(void* ptr)
     MemoryAllocator::mem_free(ptr);
 }
 
-Thread::Thread(void (*body)(void*), void* arg)
-    : myHandle(nullptr), body(body), arg(arg)
+Thread::Thread(void (*body)(void*), void* arg,TCB::Priority p)
+    : myHandle(nullptr), body(body), arg(arg), priority(p)
 {
 }
 
-Thread::Thread()
-    : myHandle(nullptr), body(wrapper), arg(this)
+Thread::Thread(TCB::Priority p)
+    : myHandle(nullptr), body(wrapper), arg(this), priority(p)
 {
 }
 
@@ -32,7 +32,7 @@ void Thread::wrapper(void* thread)
 }
 int Thread::start()
 {
-    return thread_create(&myHandle, body, arg);
+    return thread_create(&myHandle, body, arg,priority);
 }
 
 void Thread::dispatch()
@@ -75,7 +75,7 @@ void Console::putc(char c) {
 }
 
 PeriodicThread::PeriodicThread(time_t period)
-    : Thread(&PeriodicThread::periodicThreadWrapper, this), period(period) {
+    : Thread(&PeriodicThread::periodicThreadWrapper, this, TCB::low), period(period) {
 }
 
 void PeriodicThread::terminate() {

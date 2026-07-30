@@ -3,28 +3,29 @@
 #include"../lib/hw.h"
 #include "../h/Syscall_c_api.hpp"
 #include "../h/Semaphore.hpp"
+#include "TCB.hpp"
 void* operator new(size_t);
 void operator delete(void*);
 
 class Thread {
 public:
-    Thread(void (*body)(void*), void* arg);
+    Thread(void (*body)(void*), void* arg,TCB::Priority p);
     virtual ~Thread();
 
     int start();
 
     static void dispatch();
     static int sleep(time_t);
-
+    TCB::Priority getPriority(){return priority;}
 protected:
-    Thread();
+    Thread(TCB::Priority p);
     virtual void run() {}
 
 private:
     thread_t myHandle;
     void (*body)(void*);
     void* arg;
-
+    TCB::Priority priority;
     static void wrapper(void* thread);
 };
 class Semaphore {
