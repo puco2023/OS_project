@@ -16,5 +16,6 @@
 #define TIME_SLEEP 0x31
 #define GETC 0x41
 #define PUTC 0x42
-
+#define SEND 0x43
+#define RECEIVE 0x44
 #endif

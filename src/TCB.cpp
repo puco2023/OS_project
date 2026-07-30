@@ -150,3 +150,49 @@ int TCB::thread_exit()
 
     return 1;
 }
+void TCB::send(TCB* t1,TCB*t2,char* mes) {
+    if (t1->semaphore==nullptr) {
+        t1->semaphore = new _sem(0);
+    }
+    if (t2->mailSemaphore==nullptr) {
+        t2->mailSemaphore = new _sem(0);
+    }
+
+    MessageNode* node = (MessageNode*)MemoryAllocator::mem_alloc(sizeof(MessageNode));
+    node->sender = t1;
+    node->message = mes;
+    node->next = nullptr;
+
+    if (t2->mailTail == nullptr) {
+        t2->mailHead = t2->mailTail = node;
+    } else {
+        t2->mailTail->next = node;
+        t2->mailTail = node;
+    }
+
+    t2->mailSemaphore->signal();
+    t1->semaphore->wait();
+}
+char* TCB::receive(TCB* t1,TCB* t2) {
+    if (t1->mailSemaphore==nullptr) {
+        t1->mailSemaphore = new _sem(0);
+    }
+
+    t1->mailSemaphore->wait();
+
+    MessageNode* node = t1->mailHead;
+    t1->mailHead = node->next;
+    if (t1->mailHead == nullptr) {
+        t1->mailTail = nullptr;
+    }
+
+    char* mes = node->message;
+    TCB* sender = node->sender;
+    MemoryAllocator::mem_free(node);
+
+    if (sender != nullptr && sender->semaphore != nullptr) {
+        sender->semaphore->signal();
+    }
+
+    return mes;
+}

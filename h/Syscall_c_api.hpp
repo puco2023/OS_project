@@ -23,4 +23,6 @@ int sem_signal_n(sem_t id,unsigned n);
 int time_sleep(time_t time);
 char getc();
 void putc(char c);
+void send(thread_t handle,char* message);
+char* receive(thread_t handle);
 #endif

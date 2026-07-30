@@ -3,6 +3,8 @@
 
 #include "Scheduler.hpp"
 #include "../lib/hw.h"
+#include "Semaphore.hpp"
+class _sem;
 class TCB {
 public:
     ~TCB() { delete[] stack; }
@@ -43,7 +45,8 @@ public:
           blocked(false),
           sleepTime(0),
           nextSleeping(nullptr),
-          timeSlice(timeSlice)
+          timeSlice(timeSlice),message(nullptr),semaphore(nullptr),val(0),
+          mailHead(nullptr),mailTail(nullptr),mailSemaphore(nullptr)
     {
     }
     int thread_exit();
@@ -62,6 +65,13 @@ public:
         uint64 s9;
         uint64 s10;
         uint64 s11;
+    };
+    static void send(TCB* t1,TCB* t2,char* mes);
+    static char* receive(TCB* t1, TCB* t2);
+    struct MessageNode {
+        TCB* sender;
+        char* message;
+        MessageNode* next;
     };
 private:
 
@@ -94,6 +104,13 @@ private:
 
     static void threadWrapper();
     static void idleBody(void*);
+    char* message;
+    _sem* semaphore;
+    int val;
+
+    MessageNode* mailHead;
+    MessageNode* mailTail;
+    _sem* mailSemaphore;
 };
 
 #endif

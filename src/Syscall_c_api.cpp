@@ -191,3 +191,26 @@ void putc(char c) {
     __asm__ volatile("li a0, 0x42");
     __asm__ volatile("ecall");
 }
+void send(thread_t handle, char* message) {
+    __asm__ volatile(
+        "mv a1, %0\n\t"
+        "mv a2, %1\n\t"
+        "mv a0, %2\n\t"
+        "ecall\n\t"
+        :
+        :"r"(handle), "r"(message), "r"((uint64)SEND)
+        : "a0", "a1", "a2","memory");
+}
+
+char *receive(thread_t handle) {
+    char* ret;
+    __asm__ volatile(
+        "mv a1, %1\n\t"
+        "mv a0, %2\n\t"
+        "ecall\n\t"
+        "mv %0,a0"
+        : "=r"(ret)
+        : "r"(handle), "r"((uint64)RECEIVE)
+        : "a0", "a1", "memory");
+    return (char*)ret;
+}

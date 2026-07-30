@@ -116,6 +116,17 @@ void RiscV::handleSupervisorTrap() {
                 KernelConsole::getInstance()->putc(c);
                 break;
             }
+            case SEND: {
+                TCB* h = (TCB*)arg1;
+                char* m = (char*)arg2;
+                TCB::send(TCB::running,h,m);
+                break;
+            }
+            case RECEIVE: {
+                TCB* h = (TCB*)arg1;
+                ret = (uint64)TCB::receive(TCB::running,h);
+                break;
+            }
         }
 
         __asm__ volatile("mv a0, %0" : : "r"(ret));

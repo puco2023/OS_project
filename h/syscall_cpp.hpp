@@ -15,7 +15,8 @@ public:
 
     static void dispatch();
     static int sleep(time_t);
-
+    void send(char* message);
+    char* receive();
 protected:
     Thread();
     virtual void run() {}

@@ -95,3 +95,9 @@ void PeriodicThread::periodicThreadWrapper(void* arg) {
         Thread::sleep(thread->period);
     }
 }
+void Thread::send(char* message) {
+    ::send(this->myHandle,message);
+}
+char* Thread::receive() {
+    return ::receive(this->myHandle);
+}
