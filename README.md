@@ -1,1 +1,1 @@
-implementing shell of RISCV operive system
+implementing shell of RISCV opering system
